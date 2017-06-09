@@ -74,7 +74,7 @@ function run() {
 				})
 				.ffprobe(function(err, data) {
 					sendEmail({
-						file: data.format.filename,
+						file: file,
 						detail: JSON.stringify(data, null, 4)
 					})
 				})
