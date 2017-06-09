@@ -67,7 +67,7 @@ function run() {
 				.format('flv')
 				.save(config.rtmp)
 				.on('start', () => {
-					ffmpeg.ffprobe(file, function(err, data) {
+					FFInstance.ffprobe(file, function(err, data) {
 					   	sendEmail({
 					   		file: file,
 					   		detail: JSON.stringify(data, null, 4)
