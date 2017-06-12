@@ -3,8 +3,6 @@ const FfmpegCommand = require('fluent-ffmpeg');
 
 const config = require('./config.js');
 
-const FFInstance = new FfmpegCommand();
-
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
@@ -52,6 +50,7 @@ function sendErrorEmail(options, cb) {
 }
 
 function run() {
+	console.log('run', new Date(Date.now() + 1000*60*60*8));
 	rd.readFileFilter(config.root, /\.(mp4|avi|wmv|mpeg|ogg|rmvb)$/i, (err, files) => {
 		allFile = files;
 		allFile.sort(function(){ return 0.5 - Math.random() });
@@ -59,13 +58,14 @@ function run() {
 		function poll() {
 			let file = allFile[0];
 			if (!file) return run();
+			let FFInstance = new FfmpegCommand();
 			console.log('开始播放： ' + file);
 			FFInstance
 				.input(file)
+				.inputOptions('-re')
 				.outputOptions('-vcodec copy')
 				.outputOptions('-acodec copy')
 				.format('flv')
-				.save(config.rtmp)
 				.on('start', () => {
 					FFInstance.ffprobe(file, function(err, data) {
 					   	sendEmail({
@@ -73,6 +73,9 @@ function run() {
 					   		detail: JSON.stringify(data, null, 4)
 					   	})
 					});
+				})
+				.on('progress', function(progress) {
+					console.log('Processing: ' + progress.percent + '% done');
 				})
 				.on('error', function(e) {
 					sendErrorEmail({
@@ -82,10 +85,13 @@ function run() {
 					throw e;
 				})
 				.on('end', function() {
-					console.log('播放结束：' + file);
 					allFile.splice(0, 1);
-					poll();
+					FFInstance.kill();
+					setTimeout(() => {
+						poll()
+					}, 0);
 				})
+				.save(config.rtmp)
 		}
 		poll();
 	})
