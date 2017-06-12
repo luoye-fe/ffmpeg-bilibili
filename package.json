@@ -10,7 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.16.2",
     "fluent-ffmpeg": "^2.1.2",
+    "form-data": "^2.2.0",
+    "node-fetch": "^1.7.1",
     "nodemailer": "^4.0.1",
     "rd": "^1.0.0"
   }
