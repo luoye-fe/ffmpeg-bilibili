@@ -103,8 +103,9 @@ function run() {
 					sendErrorEmail({
 						file: file,
 						detail: e
+					}, () => {
+						throw e;
 					})
-					throw e;
 				})
 				.on('end', function() {
 					allFile.splice(0, 1);
