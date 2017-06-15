@@ -54,6 +54,7 @@ function sendErrorEmail(options, cb) {
 function run() {
 	console.log('run', new Date(Date.now() + 1000 * 60 * 60 * 8));
 	rd.readFileFilter(config.root, /\.(mp4|avi|wmv|mpeg|ogg|rmvb)$/i, (err, files) => {
+		if (files.length === 0) return console.log('no file');
 		allFile = files;
 		allFile.sort(function() {
 			return 0.5 - Math.random()
